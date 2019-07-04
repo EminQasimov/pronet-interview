@@ -1,26 +1,38 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from "react"
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+import Header from "./Components/Header"
+import Sidebar from "./Components/Sidebar"
+import Main from "./Components/Main"
+
+import { ThemeProvider } from "styled-components"
+import { Provider } from "react-redux"
+import store from "./store"
+
+const theme = {
+  green: "#6FC99C",
+  darkGreen: "#55AB80",
+  hoverGreen: "rgba(85, 171, 128, 0.15)",
+  black: " #373737",
+  gray: " #F2F2F2",
+  darkGray: "#E9E9E9",
+  white: "#fff",
+  textBlack: "#383D3E",
+  textBlack200: "#505050",
+  textBlack300: "#31393C"
 }
 
-export default App;
+class App extends Component {
+  render() {
+    return (
+      <ThemeProvider theme={theme}>
+        <Provider store={store}>
+          <Header />
+          <Sidebar />
+          <Main />
+        </Provider>
+      </ThemeProvider>
+    )
+  }
+}
+
+export default App
