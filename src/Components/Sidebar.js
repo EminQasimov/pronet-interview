@@ -14,6 +14,7 @@ const Nav = styled.nav`
     color: ${props => props.theme.white}
     height: calc(100vh - 80px);
     position: fixed;
+    z-index: 99;
     left: 0;
     top: 80px;
     user-select: none;

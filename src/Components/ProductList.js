@@ -1,21 +1,11 @@
 import React from "react"
-import styled  from "styled-components"
+import styled from "styled-components"
 import { Col, Icon, List } from "antd"
+import { connect } from "react-redux"
 
 import AddButton from "./AddButton"
 import { ReactComponent as Delete } from "../assets/img/delete.svg"
 import { ReactComponent as Pencil } from "../assets/img/pencil.svg"
-
-const data = [
-  "Fujitsu A5R35-D",
-  "Fujitsu E5R85-Z",
-  "Fujitsu C5A32-C",
-  "Fujitsu A5R35-D",
-  "Fujitsu A5R35-D",
-  "Fujitsu A5G35-A",
-  "Fujitsu A5R35-C",
-  "Fujitsu B4R35-O", 
-]
 
 const ProductList = styled(List)`
   margin-top: 6px !important;
@@ -46,36 +36,57 @@ const ProductList = styled(List)`
       transform: scale(0);
       transition: all 0.3s ease-in-out;
       &:hover {
-       cursor: pointer;
-       *{
-        fill: ${({ theme }) => theme.green};
-       }
+        cursor: pointer;
+        * {
+          fill: ${({ theme }) => theme.green};
+        }
       }
     }
     &:hover {
-      cursor: default;
+      cursor: alias;
       background: ${({ theme }) => theme.hoverGreen};
       span {
-        transform: scale(.9);
+        transform: scale(0.9);
         opacity: 1;
       }
     }
   }
 `
-export default function Products() {
+const P = styled.p`
+  text-transform: lowercase;
+  &:first-letter {
+    text-transform: uppercase;
+  }
+`
+const Products = ({ productList, products, productDataSend }) => {
+  if (productList.length === 0) {
+    productDataSend(null)
+  }
   return (
     <Col span={8}>
-      <AddButton title="Məhsullar"/>
+      <AddButton title="Məhsullar" />
       <ProductList
         bordered={false}
-        dataSource={data}
+        dataSource={productList}
         renderItem={item => (
-          <List.Item>
-            <p>{item}</p>
-            <span>
+          <List.Item
+            onClick={e => {
+              productDataSend(products.find(product => product.name === item))
+            }}
+          >
+            <P>{item}</P>
+            <span
+              onClick={e => {
+                e.stopPropagation()
+              }}
+            >
               <Icon component={Pencil} />
             </span>
-            <span>
+            <span
+              onClick={e => {
+                e.stopPropagation()
+              }}
+            >
               <Icon component={Delete} />
             </span>
           </List.Item>
@@ -84,3 +95,21 @@ export default function Products() {
     </Col>
   )
 }
+
+function has(object, key) {
+  return object ? hasOwnProperty.call(object, key) : false
+}
+
+const mapStateToProp = ({ categories, products }) => {
+  //dont mutate active path array
+  const activeCategory = categories.activePath[categories.activePath.length - 1]
+
+  return {
+    products,
+    productList: has(categories[activeCategory], "products")
+      ? categories[activeCategory]["products"]
+      : []
+  }
+}
+
+export default connect(mapStateToProp)(Products)

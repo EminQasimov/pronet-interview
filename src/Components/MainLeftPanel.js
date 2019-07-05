@@ -1,68 +1,82 @@
-import React from "react"
+import React, { useState } from "react"
 import styled, { css } from "styled-components"
 import { Row, Col, Button, Input, Collapse, Icon } from "antd"
 import { ReactComponent as Setting } from "../assets/img/setting.svg"
 import { ReactComponent as DownArrow } from "../assets/img/blackArrow.svg"
+import Drawer from "./Drawer"
 
 const { Search } = Input
 const { Panel } = Collapse
 
 export default function MainLeftPanel({ height }) {
+  const [visible, setVisible] = useState(false)
+
+  function showDrawer() {
+    setVisible(true)
+  }
+
+  function closeDrawer() {
+    setVisible(false)
+  }
+
   return (
-    <LeftPanel style={{ height: height ? height + "px" : "120%" }}>
-      <Heading type="flex" justify="space-between" align="middle">
-        <Col>
-          <h4>Məhsullar jurnalı</h4>
-        </Col>
-        <Col>
-          <Setting />
-        </Col>
-      </Heading>
+    <>
+      <Drawer height={height} visible={visible} closeDrawer={closeDrawer} />
+      <LeftPanel style={{ height: height ? height + "px" : "120%" }}>
+        <Heading type="flex" justify="space-between" align="middle">
+          <Col>
+            <h4>Məhsullar jurnalı</h4>
+          </Col>
+          <Col>
+            <Setting />
+          </Col>
+        </Heading>
 
-      <YeniKateqoriya type="flex" align="middle">
-        <Button type="primary" size="large">
-          Yeni Kateqoriya
-        </Button>
-      </YeniKateqoriya>
+        <YeniKateqoriya type="flex" align="middle">
+          <Button type="primary" size="large" onClick={showDrawer}>
+            Yeni Kateqoriya
+          </Button>
+        </YeniKateqoriya>
 
-      <SearchInput type="flex" align="middle">
-        <label htmlFor="searchinput">
-          Axtarış
-          <Search
-            size="large"
-            placeholder="Məhsulun adı"
-            onSearch={value => console.log(value)}
-            id="searchinput"
-          />
-        </label>
-      </SearchInput>
+        <SearchInput type="flex" align="middle">
+          <label htmlFor="searchinput">
+            Axtarış
+            <Search
+              size="large"
+              placeholder="Məhsulun adı"
+              onSearch={value => console.log(value)}
+              id="searchinput"
+            />
+          </label>
+        </SearchInput>
 
-      <CollapsMenu
-        expandIconPosition="right"
-        bordered={false}
-        accordion
-        expandIcon={() => <Icon component={DownArrow} />}
-      >
-        <Panel header="Kateqoriya üzrə" key="1">
-          asdad
-        </Panel>
-        <Panel header="Model seçimi" key="2">
-          asdasd
-        </Panel>
-        <Panel header="Məhsul tipi" key="3">
-          Sdasd
-        </Panel>
-      </CollapsMenu>
+        <CollapsMenu
+          expandIconPosition="right"
+          bordered={false}
+          accordion
+          expandIcon={() => <Icon component={DownArrow} />}
+        >
+          <Panel header="Kateqoriya üzrə" key="1">
+            asdad
+          </Panel>
+          <Panel header="Model seçimi" key="2">
+            asdasd
+          </Panel>
+          <Panel header="Məhsul tipi" key="3">
+            Sdasd
+          </Panel>
+        </CollapsMenu>
 
-      <Filter>
-        <p>Seçim üzrə filtrasiya</p>
-        <Button type="primary" size="large">
-          Ümumi
-        </Button>
-        <p>Mal / Material</p>
-        <p>Xidmət</p>
-      </Filter>
-    </LeftPanel>
+        <Filter>
+          <p>Seçim üzrə filtrasiya</p>
+          <Button type="primary" size="large">
+            Ümumi
+          </Button>
+          <p>Mal / Material</p>
+          <p>Xidmət</p>
+        </Filter>
+      </LeftPanel>
+    </>
   )
 }
 
@@ -81,8 +95,13 @@ const ThemeOverrides = css`
 
 const LeftPanel = styled(Row)`
   width: 296px;
+  position: absolute;
+  left: 0;
+  z-index: 3;
+  border-right: 2px solid ${({ theme }) => theme.gray};
   background: ${({ theme }) => theme.darkGray};
 `
+
 const Heading = styled(Row)`
   height: 88px;
   padding: 0 32px;

@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 import styled from "styled-components"
 import { Row } from "antd"
 import Categories from "./Categories"
@@ -13,12 +13,14 @@ const DateRange = styled.h2`
 `
 
 export default function MainRightPanel() {
+  const [data, setData] = useState(null)
+
   return (
     <Row gutter={16}>
       <DateRange>08 - 18 Sentyabr 2018</DateRange>
       <Categories />
-      <ProductList />
-      <ProductInfo product={{}} />
+      <ProductList productDataSend={data => setData(data)} />
+      <ProductInfo product={data} />
     </Row>
   )
 }

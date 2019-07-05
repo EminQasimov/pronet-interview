@@ -8,13 +8,17 @@ body {
 .ant-popover-inner-content {
   padding: 0 !important;
 }
-.ant-collapse .ant-collapse-item-disabled > .ant-collapse-header {
+.ant-collapse .ant-collapse-no-arrow > .ant-collapse-header {
   color: #fff !important;
   cursor: default !important;
   background: #b4b4b4 !important;
 }
 
-.ant-collapse .ant-collapse-item-disabled > .ant-collapse-header:hover {
+.ant-collapse .ant-collapse-no-arrow > .ant-collapse-header:hover {
   background: #b4b4b4 !important;
   opacity: 0.8;
+}
+
+.ant-empty-description {
+  font-size: 0px !important;
 }

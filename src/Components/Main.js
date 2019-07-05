@@ -17,11 +17,10 @@ const Main = styled.main`
     overflow-x: hidden; 
 `
 
-
 // don't show scrollbar in large height screens
 function useResize(main) {
   const [height, setHeight] = useState(null)
-  
+
   useEffect(() => {
     function resize() {
       let el = main.current,
@@ -48,7 +47,15 @@ export default function() {
   return (
     <Main ref={main}>
       <MainLeftPanel height={height} />
-      <Row style={{ flex: 1, padding: "24px 32px" }}>
+      <Row
+        style={{
+          flex: 1,
+          padding: "24px 32px",
+          width: " calc(100% - 296px)",
+          position: "absolute",
+          right: 0
+        }}
+      >
         <MainRightPanel />
       </Row>
     </Main>
