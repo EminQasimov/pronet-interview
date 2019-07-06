@@ -4,7 +4,6 @@ import Sidebar from "./Components/Sidebar"
 import Main from "./Components/Main"
 
 import { ThemeProvider } from "styled-components"
-import { ConfigProvider, Icon } from "antd"
 import { Provider } from "react-redux"
 import store from "./store"
 
@@ -26,18 +25,10 @@ class App extends Component {
     return (
       <ThemeProvider theme={theme}>
         <Provider store={store}>
-          <ConfigProvider
-            renderEmpty={() => (
-              <div style={{ textAlign: "center" }}>
-                <Icon type="warning" theme="twoTone" style={{ fontSize: 30 }} />
-                <p>List boşdur</p>
-              </div>
-            )}
-          >
+         
             <Header />
             <Sidebar />
             <Main />
-          </ConfigProvider>
         </Provider>
       </ThemeProvider>
     )

@@ -19,6 +19,18 @@ body {
   opacity: 0.8;
 }
 
-.ant-empty-description {
-  font-size: 0px !important;
+.item-enter {
+  opacity: 0;
+}
+.item-enter-active {
+  opacity: 1;
+}
+
+.item-exit {
+  opacity: 1;
+  transform: translateX(0);
+}
+.item-exit-active {
+  opacity: 0;
+  transform: translateX(-100%);
 }

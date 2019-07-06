@@ -7,7 +7,6 @@ const AddButton = styled(Button)`
   background: ${({ theme }) => theme.darkGreen} !important;
   border-color: ${({ theme }) => theme.darkGreen} !important;
   text-align: left !important;
-
   &:hover,
   &:focus {
     cursor: pointer;
@@ -23,10 +22,10 @@ const AddButton = styled(Button)`
   }
 `
 
-export default function({ title }) {
+export default function(props) {
   return (
-    <AddButton type="primary" size="large" block>
-      <span> {title}</span>
+    <AddButton type="primary" size="large" block {...props}>
+      <span> {props.title}</span>
       <span>
         <Icon type="plus" style={{ fontSize: 18 }} />
       </span>

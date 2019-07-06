@@ -1,4 +1,10 @@
-import { CHANGE_PATH } from "../actions"
+import {
+  CHANGE_PATH,
+  ADD_PRODUCT_TO_CATEGORY,
+  DELETE_PRODUCT_FROM_CATEGORY
+} from "../actions"
+
+import produce from "immer"
 
 const initaLCategories = {
   activePath: ["Kompüterlər", "Prosessorlar", "Fujitsu Duo Technics"],
@@ -144,11 +150,28 @@ const initaLCategories = {
 export default function(state = initaLCategories, action) {
   switch (action.type) {
     case CHANGE_PATH:
-      console.log("from reducer", action.path)
-      return {
-        ...state,
-        activePath: action.path
-      }
+      console.log("from CHANGE_PATH", action.path)
+
+      return produce(state, draftState => {
+        draftState.activePath = action.path
+      })
+
+    case DELETE_PRODUCT_FROM_CATEGORY:
+      console.log("from DELETE_PRODUCT_FROM_CATEGORY", action.name, action.path)
+
+      return produce(state, draftState => {
+        draftState[action.path].products = draftState[
+          action.path
+        ].products.filter(name => name !== action.name)
+      })
+
+    case ADD_PRODUCT_TO_CATEGORY:
+      console.log("from ADD_PRODUCT_TO_CATEGORY", action.name)
+      return produce(state, draftState => {
+        let active = draftState.activePath.pop()
+        draftState[active].products.push(action.name)
+      })
+
     default:
       return state
   }

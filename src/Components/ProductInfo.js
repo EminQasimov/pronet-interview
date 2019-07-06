@@ -1,7 +1,7 @@
 import React, { useEffect } from "react"
 import styled, { keyframes } from "styled-components"
 import { connect } from "react-redux"
-import { Col, List } from "antd"
+import { Col, Empty } from "antd"
 import shortid from "shortid"
 
 const ProductInfo = ({ defaultProduct, product }) => {
@@ -21,19 +21,19 @@ const ProductInfo = ({ defaultProduct, product }) => {
     <Col span={8}>
       <Wrapper>
         <Title>{name}</Title>
-        <List
-          bordered={false}
-          dataSource={Object.keys(rest)}
-          description="siyahı boşdur"
-          renderItem={key => (
-            <List.Item>
+        {Object.keys(rest).length === 0 && (
+          <StyledEmpty description="List Boşdur" />
+        )}
+        <List>
+          {Object.keys(rest).map(key => {
+            return (
               <Item key={key}>
                 <Label>{key}</Label>
                 <Value key={shortid.generate()}>{productObj[key]}</Value>
               </Item>
-            </List.Item>
-          )}
-        />
+            )
+          })}
+        </List>
       </Wrapper>
     </Col>
   )
@@ -71,16 +71,25 @@ const anim = keyframes`
     transform: translateY(0px);
   }
 `
+ 
+const StyledEmpty = styled(Empty)`
+  animation: ${anim} 0.5s ease-in forwards;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 360px;
+  margin: 0 !important;
+  width: 100%;
+  border-radius: 4px;
+  background: ${({ theme }) => theme.white};
+`
 
 const Wrapper = styled("div")`
   background: ${({ theme }) => theme.white};
   color: ${({ theme }) => theme.textBlack};
   border-radius: 4px;
   padding: 24px;
-  .ant-list-item {
-    padding: 0 !important;
-    border: none !important;
-  }
 `
 const Title = styled.h2`
   margin-bottom: 22px;
@@ -89,7 +98,10 @@ const Title = styled.h2`
   color: ${({ theme }) => theme.textBlack300};
   font-weight: bold;
 `
-const Item = styled.div`
+const List = styled.ul`
+  padding: 0;
+`
+const Item = styled.li`
   margin-bottom: 10px;
   overflow: hidden;
 `

@@ -1,3 +1,5 @@
+import { DELETE_PRODUCT, ADD_PRODUCT } from "../actions"
+import produce from "immer"
 const initialProducts = [
   {
     name: "Fujitsu A5R35-E",
@@ -220,7 +222,7 @@ const initialProducts = [
     Qiyməti: "2.148.218.38",
     əlaqə: "(672) 5876570"
   },
-  
+
   {
     name: "ENAUT",
     qiymət: "$2,831.01",
@@ -284,5 +286,18 @@ const initialProducts = [
 ]
 
 export default function(state = initialProducts, action) {
-  return state
+  switch (action.type) {
+    case DELETE_PRODUCT:
+      console.log("from product reducer-deleted", action.name)
+      return [...state].filter(el => el.name !== action.name)
+
+    case ADD_PRODUCT:
+      console.log("from product reducer-deleted", action.name)
+      return produce(state, draft => {
+        draft.push({ name: action.name })
+      })
+
+    default:
+      return state
+  }
 }
