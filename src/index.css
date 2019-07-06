@@ -8,29 +8,17 @@ body {
 .ant-popover-inner-content {
   padding: 0 !important;
 }
-.ant-collapse .ant-collapse-no-arrow > .ant-collapse-header {
+.activeCat .ant-collapse-header {
   color: #fff !important;
   cursor: default !important;
   background: #b4b4b4 !important;
 }
 
-.ant-collapse .ant-collapse-no-arrow > .ant-collapse-header:hover {
+.activeCat .ant-collapse-header:hover {
   background: #b4b4b4 !important;
   opacity: 0.8;
 }
 
-.item-enter {
-  opacity: 0;
-}
-.item-enter-active {
-  opacity: 1;
-}
-
-.item-exit {
-  opacity: 1;
-  transform: translateX(0);
-}
-.item-exit-active {
-  opacity: 0;
-  transform: translateX(-100%);
+.active {
+  background: rgba(85,171,128,0.15);
 }

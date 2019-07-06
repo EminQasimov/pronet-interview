@@ -1,5 +1,9 @@
-import { DELETE_PRODUCT, ADD_PRODUCT } from "../actions"
-import produce from "immer"
+import {
+  DELETE_PRODUCT,
+  ADD_PRODUCT,
+  DELETE_CATEGORY_PRODUCTS
+} from "../actions"
+
 const initialProducts = [
   {
     name: "Fujitsu A5R35-E",
@@ -288,15 +292,15 @@ const initialProducts = [
 export default function(state = initialProducts, action) {
   switch (action.type) {
     case DELETE_PRODUCT:
-      console.log("from product reducer-deleted", action.name)
       return [...state].filter(el => el.name !== action.name)
-
     case ADD_PRODUCT:
-      console.log("from product reducer-deleted", action.name)
-      return produce(state, draft => {
-        draft.push({ name: action.name })
+      return [...state, { name: action.name }]
+    case DELETE_CATEGORY_PRODUCTS:
+      let draft = [...state]
+      action.products.forEach(item => {
+        draft = draft.filter(el => el.name !== item)
       })
-
+      return draft
     default:
       return state
   }

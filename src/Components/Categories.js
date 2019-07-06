@@ -1,43 +1,99 @@
-import React, { useState, useRef } from "react"
+import React from "react"
 import styled from "styled-components"
 import { connect } from "react-redux"
 import { changePath } from "../store/actions"
-
-import useOnClickOutside from "../hooks/useOnClickOutside"
-import { Col, Collapse, Icon, Popover } from "antd"
+import { Col, Collapse, Icon } from "antd"
 import AddButton from "./AddButton"
+import PopAndDots from "./PopAndDots"
 import { ReactComponent as DownArrow } from "../assets/img/blackArrow.svg"
 import { ReactComponent as UpArrow } from "../assets/img/upArrow.svg"
-import { ReactComponent as Pencil } from "../assets/img/pencil.svg"
-import { ReactComponent as Delete } from "../assets/img/delete.svg"
 
 const { Panel } = Collapse
 
-const PopContent = styled.div`
-  font-size: 12px;
-  padding: 12px 16px;
-  user-select: none;
-  color: ${({ theme }) => theme.textBlack};
-  path {
-    fill: ${({ theme }) => theme.textBlack};
+function has(object, key) {
+  return object ? hasOwnProperty.call(object, key) : false
+}
+
+const Categories = props => {
+  const path = props.activePath[props.activePath.length - 1]
+  function renderSub(_, key) {
+    if (has(props.categories[key], "products")) {
+      let activeLast = path
+      if (activeLast !== key) {
+        props.change([key])
+      }
+    }
+    if (_) {
+      console.log(key, "is opened")
+    } else {
+      console.log(key, "is closed")
+    }
   }
-  .anticon {
-    font-size: 16px;
-    padding-right: 4px;
-    vertical-align: bottom;
+
+  function loop(tree) {
+    if (tree !== undefined && has(tree, "children") && tree.children) {
+      return tree.children.map(key => {
+        let target = props.categories[key]
+        let rendered = (
+          <CollapsMenu
+            bordered={false}
+            accordion={true}
+            onChange={_ => renderSub(_, key)}
+            key={key}
+            expandIcon={({ isActive }) => {
+              return isActive ? (
+                <Icon component={UpArrow} />
+              ) : (
+                <Icon component={DownArrow} />
+              )
+            }}
+            defaultActiveKey={
+              props.categories.activePath.find(cat => cat === key) ? key : ""
+            }
+          >
+            <Panel
+              header={<p>{key}</p>}
+              showArrow={has(target, "children") ? true : false}
+              extra={<PopAndDots cat={key} plus={has(target, "children") ? true : false} />}
+              className={path === key ? "activeCat" : null}
+              key={key}
+            >
+              {loop(target)}
+            </Panel>
+          </CollapsMenu>
+        )
+
+        return rendered
+      })
+    } else {
+      return null
+    }
   }
-  p,
-  p *,
-  path {
-    transition: all 0.1s ease-in-out;
+
+  return (
+    <Col span={8}>
+      <AddButton title="Kategoriyalar" />
+
+      {loop(props.categories)}
+    </Col>
+  )
+}
+
+const mapStateToProps = ({ categories }) => {
+  return { categories, activePath: categories.activePath }
+}
+const mapDispatchToProps = dispatch => {
+  return {
+    change: path => {
+      dispatch(changePath(path))
+    }
   }
-  p:hover,
-  p:hover * {
-    cursor: pointer;
-    color: ${({ theme }) => theme.darkGreen};
-    fill: ${({ theme }) => theme.darkGreen};
-  }
-`
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Categories)
 
 const CollapsMenu = styled(Collapse)`
   background-color: transparent !important;
@@ -47,7 +103,7 @@ const CollapsMenu = styled(Collapse)`
     border: 1px solid transparent !important;
   }
   .ant-collapse-header {
-    background: ${({ theme }) => theme.white} !important;
+    background: ${({ theme }) => theme.white};
     border-radius: 4px !important;
     height: 40px !important;
     transition: background 0.3s ease-in-out;
@@ -84,7 +140,7 @@ const CollapsMenu = styled(Collapse)`
     }
 
     &:hover {
-      background: ${({ theme }) => theme.hoverGreen} !important;
+      background: ${({ theme }) => theme.hoverGreen};
       span {
         opacity: 0.7 !important;
         transform: scale(0.99) !important;
@@ -96,145 +152,3 @@ const CollapsMenu = styled(Collapse)`
     padding-left: 16px !important;
   }
 `
-
-function has(object, key) {
-  return object ? hasOwnProperty.call(object, key) : false
-}
-
-const content = (
-  <PopContent
-    onClick={e => {
-      e.preventDefault()
-      e.stopPropagation()
-    }}
-  >
-    <p
-      onClick={e => {
-        console.log("alt clicked")
-      }}
-    >
-      <Icon type="plus" /> Alt kateqoriya
-    </p>
-    <p
-      onClick={e => {
-        console.log("alt clicked")
-      }}
-    >
-      <Icon component={Pencil} /> Redaktə et
-    </p>
-    <p
-      style={{ margin: 0 }}
-      onClick={e => {
-        console.log("alt clicked")
-      }}
-    >
-      <Icon component={Delete} /> Sil
-    </p>
-  </PopContent>
-)
-
-function Dots() {
-  const [showDots, setShowDots] = useState(false)
-  const ref = useRef()
-
-  useOnClickOutside(ref, () => setShowDots(false))
-
-  return (
-    <Popover placement="leftTop" content={content} trigger="click">
-      <span
-        ref={ref}
-        style={{
-          opacity: showDots ? 1 : 0,
-          transform: showDots ? "scale(0.99)" : "scale(0)"
-        }}
-        onClick={event => {
-          event.preventDefault()
-          event.stopPropagation()
-          setShowDots(showDots => !showDots)
-          console.log(showDots)
-        }}
-      >
-        <Icon type="more" size="large" />
-      </span>
-    </Popover>
-  )
-}
-
-//____________CATERGORIES_________________
-const Categories = props => {
-  function renderSub(_, key) {
-    if (has(props.categories[key], "products")) {
-      let activeLast = [...props.categories.activePath].pop()
-      if (activeLast !== key) {
-        props.change([key])
-      }
-    }
-    if (_) {
-      console.log(key, "is opened")
-    } else {
-      console.log(key, "is closed")
-    }
-  }
-
-  function loop(tree) {
-    if (tree !== undefined && has(tree, "children") && tree.children) {
-      return tree.children.map(key => {
-        let target = props.categories[key]
-        let rendered = (
-          <CollapsMenu
-            bordered={false}
-            accordion={true}
-            onChange={_ => renderSub(_, key)}
-            key={key}
-            expandIcon={({ isActive }) => {
-              return isActive ? (
-                <Icon component={UpArrow} />
-              ) : (
-                <Icon component={DownArrow} />
-              )
-            }}
-            defaultActiveKey={
-              props.categories.activePath.find(cat => cat === key) ? key : ""
-            }
-          >
-            <Panel
-              header={<p>{key}</p>}
-              showArrow={has(target, "children") ? true : false}
-              extra={<Dots />}
-              key={key}
-            >
-              {loop(target)}
-            </Panel>
-          </CollapsMenu>
-        )
-
-        return rendered
-      })
-    } else {
-      return null
-    }
-  }
-
-  return (
-    <Col span={8}>
-      <AddButton title="Kategoriyalar" />
-      {loop(props.categories)}
-    </Col>
-  )
-}
-
-const mapStateToProps = ({ categories }) => {
-  return { categories }
-}
-const mapDispatchToProps = dispatch => {
-  return {
-    change: path => {
-      dispatch(changePath(path))
-    }
-  }
-}
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Categories)

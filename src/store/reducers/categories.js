@@ -1,14 +1,22 @@
 import {
   CHANGE_PATH,
   ADD_PRODUCT_TO_CATEGORY,
-  DELETE_PRODUCT_FROM_CATEGORY
+  DELETE_PRODUCT_FROM_CATEGORY,
+  SET_CURRENT_PRODUCT,
+  DELETE_CATEGORY,
+  SET_PRODUCT_EDIT
 } from "../actions"
 
 import produce from "immer"
 
+function has(object, key) {
+  return object ? hasOwnProperty.call(object, key) : false
+}
+
 const initaLCategories = {
   activePath: ["Kompüterlər", "Prosessorlar", "Fujitsu Duo Technics"],
-
+  activeProduct: "",
+  editProduct: false,
   children: [
     "Məişət texnikası",
     "Avadanlıq",
@@ -31,7 +39,7 @@ const initaLCategories = {
       "Fujitsu A5R35-D",
       "Fujitsu 36GD9-A",
       "Fujitsu A536H-H",
-      "Fujitsu A5R35-D",
+      "Fujitsu A5R35-Z",
       "Fujitsu A5R35-Q",
       "Fujitsu 36GD9-F",
       "Fujitsu A536H-B",
@@ -44,7 +52,7 @@ const initaLCategories = {
     children: ["toshiba", "hp"]
   },
   hp: {
-    products: []
+    children: ["Yük Maşınları", "Motosiklet"]
   },
   Maşinlar: {
     children: ["Yük Maşınları", "Motosiklet"]
@@ -149,28 +157,77 @@ const initaLCategories = {
 
 export default function(state = initaLCategories, action) {
   switch (action.type) {
+    case SET_PRODUCT_EDIT:
+      return produce(state, draft => {
+        draft.editProduct = action.mode
+      })
     case CHANGE_PATH:
-      console.log("from CHANGE_PATH", action.path)
-
-      return produce(state, draftState => {
-        draftState.activePath = action.path
+      return produce(state, draft => {
+        //change activeProduct to first Element of activeCategory
+        draft.activePath = action.path
+        draft.activeProduct = draft[action.path][0]
       })
 
     case DELETE_PRODUCT_FROM_CATEGORY:
-      console.log("from DELETE_PRODUCT_FROM_CATEGORY", action.name, action.path)
+      return produce(state, draft => {
+        let active = draft.activePath[draft.activePath.length - 1]
 
-      return produce(state, draftState => {
-        draftState[action.path].products = draftState[
-          action.path
-        ].products.filter(name => name !== action.name)
+        if (draft.activeProduct === action.name) {
+          //reset if active product is deleted
+          draft.activeProduct = ""
+        }
+        draft[active].products = draft[active].products.filter(
+          name => name !== action.name
+        )
       })
 
     case ADD_PRODUCT_TO_CATEGORY:
-      console.log("from ADD_PRODUCT_TO_CATEGORY", action.name)
-      return produce(state, draftState => {
-        let active = draftState.activePath.pop()
-        draftState[active].products.push(action.name)
+      return produce(state, draft => {
+        let active = draft.activePath[draft.activePath.length - 1]
+        draft[active].products.unshift(action.name)
       })
+
+    case SET_CURRENT_PRODUCT:
+      return produce(state, draft => {
+        draft.activeProduct = action.product
+      })
+
+    case DELETE_CATEGORY:
+      let cat = action.cat
+      let paths = []
+
+      return produce(state, draft => {
+        function findChildren(tree) {
+          if (tree !== undefined && has(tree, "children") && tree.children) {
+            tree.children.forEach(key => {
+              paths.push(key)
+              findChildren(draft[key])
+            }) //foreach
+          } else {
+            return
+          }
+        } //end loop
+        findChildren(draft[cat])
+        paths.forEach(key => {
+          delete draft[key]
+        })
+        delete draft[cat]
+
+        function findParent(tree) {
+          if (tree !== undefined && has(tree, "children") && tree.children) {
+            tree.children.forEach(key => {
+              if (key === cat) {
+                return (tree.children = tree.children.filter(el => el !== cat))
+              } else {
+                findParent(draft[key])
+              }
+            })
+          }
+        }
+        findParent(draft)
+        draft.activePath = []
+        console.log(paths)
+      }) //end produce
 
     default:
       return state
