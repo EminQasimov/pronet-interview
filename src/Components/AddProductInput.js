@@ -61,9 +61,10 @@ export default function AddProductInput({ submitHandler }) {
               e.preventDefault()
               let val = value.trim()
               if (val) {
-                submitHandler(val)
-                setValue("")
-                showAdd && addInput.current.focus()
+                if (submitHandler(val)) {
+                  setValue("")
+                  showAdd && addInput.current.focus()
+                }
               }
             }}
           >

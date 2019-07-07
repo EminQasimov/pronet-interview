@@ -5,6 +5,17 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* theme overrides and animations */
+
+.track-vertical {
+  background: #fff;
+  position: absolute;
+  width: 8px;
+  height: 100%;
+  right: 0px;
+  border-radius: 4px;
+  top: 0;
+}
 .ant-popover-inner-content {
   padding: 0 !important;
 }
@@ -18,7 +29,54 @@ body {
   background: #b4b4b4 !important;
   opacity: 0.8;
 }
+.ant-checkbox-checked .ant-checkbox-inner {
+  background-color: #55ab80 !important;
+  border-color: #55ab80 !important;
+}
+
+.ant-btn-primary {
+  color: #fff;
+  background-color: #55ab80 !important;
+  border-color: #55ab80 !important;
+}
 
 .active {
-  background: rgba(85,171,128,0.15);
+  background: rgba(85, 171, 128, 0.15);
+}
+::selection {
+  color: #fff;
+  background: #009688;
+}
+html {
+  --antd-wave-shadow-color: #009688 !important;
+}
+
+.trans-appear {
+  opacity: 0;
+}
+.trans-appear-active {
+  opacity: 1;
+  transition: all 0.1s ease-in;
+}
+
+.trans-enter {
+  opacity: 0;
+  transform: translateX(-100%);
+}
+.trans-enter-active {
+  opacity: 1;
+  transform: translateX(0%);
+  transition: all 0.7s ease-in 0.2;
+}
+.trans-enter-done {
+  transform: translateX(0%);
+  opacity: 1;
+}
+
+.trans-exit {
+  transform: translateX(0);
+}
+.trans-exit.trans-exit-active {
+  transform: translateX(-100%);
+  transition: all 0.3s ease-in-out;
 }

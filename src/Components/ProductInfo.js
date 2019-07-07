@@ -1,40 +1,65 @@
-import React, { useEffect } from "react"
+import React, { useState } from "react"
 import styled, { keyframes } from "styled-components"
 import { connect } from "react-redux"
 import { Col, Empty, Input, Icon, Button } from "antd"
 import shortid from "shortid"
 import { Scrollbars } from "react-custom-scrollbars"
 import { ReactComponent as Pencil } from "../assets/img/pencil.svg"
-import { setProductEdit } from "../store/actions"
+import { setProductEdit, submitEditProduct } from "../store/actions"
 
-const ProductInfo = ({ product, editProduct, close }) => {
+function has(object, key) {
+  return object ? hasOwnProperty.call(object, key) : false
+}
+
+const ProductInfo = ({ product, editProduct, close, submit }) => {
   let { name, ...rest } = product
+  let [data, setData] = useState({})
 
-  useEffect(() => {
-    console.log("product info", product)
-  })
+  function handleChange(e, key) {
+    setData({
+      ...data,
+      [key]: e.target.value
+    })
+  }
 
   return (
-    <Col span={8}>
-      <Wrapper>
+    <Col span={8} style={{ paddingBottom: 0 }}>
+      <Wrapper style={{ height: "645px" }}>
         <Title>
           <span>{name}</span>
-          {editProduct && <Icon style={{ margin: 8 }} component={Pencil} />}
+          {editProduct && name.trim() ? (
+            <Icon style={{ margin: 8 }} component={Pencil} />
+          ) : null}
         </Title>
         {Object.keys(rest).length === 0 && <StyledEmpty description=" " />}
-        <div style={{ overflow: "hidden", height: 490 }}>
-          <Scrollbars style={{ padding: 12, height: "100%" }}>
+        <div
+          style={{
+            overflow: "hidden",
+            height: editProduct ? "470px" : "500px"
+          }}
+        >
+          <Scrollbars
+            style={{ padding: 12, height: "100%" }}
+            renderTrackVertical={props => (
+              <div
+                {...props}
+                className="track-vertical"
+                style={{ background: editProduct ? "#f2f2f2" : "#fff" }}
+              />
+            )}
+          >
             <List>
               {Object.keys(rest).map(key => {
                 if (editProduct) {
                   return (
                     <Item key={key}>
                       <Label>{key}</Label>
-                      <Value key={shortid.generate()}>
+                      <Value>
                         <Input
                           size="large"
                           style={{ margin: " 10px 0", color: "#373737" }}
-                          defaultValue={product[key]}
+                          value={has(data, key) ? data[key] : product[key]}
+                          onChange={e => handleChange(e, key)}
                         />
                       </Value>
                     </Item>
@@ -43,7 +68,9 @@ const ProductInfo = ({ product, editProduct, close }) => {
                   return (
                     <Item key={key}>
                       <Label>{key}</Label>
-                      <Value key={shortid.generate()}>{product[key]}</Value>
+                      <Value key={shortid.generate()}>
+                        {product[key] ? product[key] : " - "}
+                      </Value>
                     </Item>
                   )
                 }
@@ -52,9 +79,18 @@ const ProductInfo = ({ product, editProduct, close }) => {
           </Scrollbars>
         </div>
         {editProduct && (
-          <p style={{ padding: "10px" }}>
-            <EditButton size="large">Redaktə et</EditButton>
-            <RejectButton size="large" onClick={close}>
+          <p style={{ padding: "10px", paddingTop: "30px" }}>
+            <EditButton
+              size="large"
+              onClick={() => {
+                submit({ ...rest, ...data, name })
+                close()
+                setData({})
+              }}
+            >
+              Redaktə et
+            </EditButton>
+            <RejectButton size="large" onClick={() => close()}>
               İmtina
             </RejectButton>
           </p>
@@ -62,10 +98,6 @@ const ProductInfo = ({ product, editProduct, close }) => {
       </Wrapper>
     </Col>
   )
-}
-
-function has(object, key) {
-  return object ? hasOwnProperty.call(object, key) : false
 }
 
 const mapCurrentProductToProp = ({ categories, products }) => {
@@ -110,6 +142,9 @@ const mapDispatch = dispatch => {
   return {
     close: () => {
       dispatch(setProductEdit(false))
+    },
+    submit: data => {
+      dispatch(submitEditProduct(data))
     }
   }
 }
@@ -172,7 +207,6 @@ const Wrapper = styled("div")`
   color: ${({ theme }) => theme.textBlack};
   border-radius: 4px;
   padding: 24px 8px;
-  height: 645px;
   overflow: hidden;
 `
 const Title = styled.h2`

@@ -7,14 +7,18 @@ import { Icon, Popover } from "antd"
 import { ReactComponent as Pencil } from "../assets/img/pencil.svg"
 import { ReactComponent as Delete } from "../assets/img/delete.svg"
 
-import { deleteCategory, deleteCategoryProducts } from "../store/actions"
+import {
+  deleteCategory,
+  deleteCategoryProducts,
+  editCategoryName
+} from "../store/actions"
 import { connect } from "react-redux"
 
 function has(object, key) {
   return object ? hasOwnProperty.call(object, key) : false
 }
 
-const PopUp = ({ categories, cat, deleteCategory, plus }) => {
+const PopUp = ({ categories, cat, deleteCategory, plus, editCategoryName }) => {
   //find all category products that will be deleted
   let products = []
   function loop(tree, cat) {
@@ -47,7 +51,8 @@ const PopUp = ({ categories, cat, deleteCategory, plus }) => {
 
       <p
         onClick={e => {
-          console.log("alt clicked")
+          console.log("edit clicked", cat)
+          editCategoryName(cat)
         }}
       >
         <Icon component={Pencil} /> Redaktə et
@@ -75,6 +80,9 @@ const mapDispatch = dispatch => {
     deleteCategory: (cat, products) => {
       dispatch(deleteCategoryProducts(products))
       dispatch(deleteCategory(cat))
+    },
+    editCategoryName: name => {
+      dispatch(editCategoryName(name))
     }
   }
 }

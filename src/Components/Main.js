@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useRef } from "react"
+import React, { useRef } from "react"
 import styled from "styled-components"
 import { Row } from "antd"
 import MainLeftPanel from "./MainLeftPanel"
 import MainRightPanel from "./MainRightPanel"
+import useResize from "../hooks/useResize"
 
 const Main = styled.main`
     width: calc(100% - 96px);
@@ -17,29 +18,6 @@ const Main = styled.main`
     overflow-x: hidden; 
 `
 
-// don't show scrollbar in large height screens
-function useResize(main) {
-  const [height, setHeight] = useState(null)
-
-  useEffect(() => {
-    function resize() {
-      let el = main.current,
-        height
-      el.offsetHeight < 800
-        ? (height = el.scrollHeight)
-        : (height = el.offsetHeight)
-
-      setHeight(height)
-    }
-    window.addEventListener("resize", resize)
-    return () => {
-      window.removeEventListener("resize", resize)
-    }
-  }, [main])
-
-  return height
-}
-
 export default function() {
   const main = useRef(null)
   const height = useResize(main)
@@ -51,6 +29,7 @@ export default function() {
         style={{
           flex: 1,
           padding: "24px 32px",
+          paddingBottom:0,
           width: " calc(100% - 296px)",
           position: "absolute",
           right: 0

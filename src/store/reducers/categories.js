@@ -4,7 +4,9 @@ import {
   DELETE_PRODUCT_FROM_CATEGORY,
   SET_CURRENT_PRODUCT,
   DELETE_CATEGORY,
-  SET_PRODUCT_EDIT
+  SET_PRODUCT_EDIT,
+  EDIT_CATEGORY_NAME,
+  CHANGE_CATEGORY_NAME
 } from "../actions"
 
 import produce from "immer"
@@ -17,6 +19,7 @@ const initaLCategories = {
   activePath: ["Kompüterlər", "Prosessorlar", "Fujitsu Duo Technics"],
   activeProduct: "",
   editProduct: false,
+  editCategory: "",
   children: [
     "Məişət texnikası",
     "Avadanlıq",
@@ -161,6 +164,43 @@ export default function(state = initaLCategories, action) {
       return produce(state, draft => {
         draft.editProduct = action.mode
       })
+    case EDIT_CATEGORY_NAME:
+      return produce(state, draft => {
+        draft.editCategory = action.name
+      })
+    case CHANGE_CATEGORY_NAME:
+      let { newName } = action
+      if (has(state, newName)) return state
+
+      let draft = { ...state }
+
+      function findParent(tree) {
+        if (tree !== undefined && has(tree, "children") && tree.children) {
+          tree.children.forEach((key, i) => {
+            if (key === draft.editCategory) {
+              tree.children.splice(i, 1, newName)
+            } else {
+              findParent(draft[key])
+            }
+          })
+        }
+        return
+      }
+      findParent(draft)
+
+      draft[newName] = { ...draft[draft.editCategory] }
+      delete draft[draft.editCategory]
+
+      if (draft.editCategory === draft.activeProduct) {
+        draft.activeProduct = newName
+      }
+      if (
+        draft.editCategory === draft.activePath[draft.activePath.length - 1]
+      ) {
+        draft.activePath = [newName]
+      }
+      return draft
+
     case CHANGE_PATH:
       return produce(state, draft => {
         //change activeProduct to first Element of activeCategory

@@ -12,8 +12,31 @@ export const DELETE_CATEGORY = "DELETE_CATEGORY"
 export const DELETE_CATEGORY_PRODUCTS = "DELETE_CATEGORY_PRODUCTS"
 
 export const SET_PRODUCT_EDIT = "SET_PRODUCT_EDIT"
+export const SUBMIT_EDIT_PRODUCT = "SUBMIT_EDIT_PRODUCT"
 
+export const EDIT_CATEGORY_NAME = "EDIT_CATEGORY_NAME"
+export const CHANGE_CATEGORY_NAME = "CHANGE_CATEGORY_NAME"
 
+export function changeCategoryName(newName) {
+  return {
+    type: CHANGE_CATEGORY_NAME,
+    newName
+  }
+}
+
+export function editCategoryName(name) {
+  return {
+    type: EDIT_CATEGORY_NAME,
+    name
+  }
+}
+
+export function submitEditProduct(data) {
+  return {
+    type: SUBMIT_EDIT_PRODUCT,
+    data
+  }
+}
 
 export function setProductEdit(mode) {
   return {
@@ -35,8 +58,6 @@ export function deleteCategoryProducts(products) {
     products
   }
 }
-
-
 
 export function setCurrentProduct(product) {
   return {

@@ -1,7 +1,8 @@
 import {
   DELETE_PRODUCT,
   ADD_PRODUCT,
-  DELETE_CATEGORY_PRODUCTS
+  DELETE_CATEGORY_PRODUCTS,
+  SUBMIT_EDIT_PRODUCT
 } from "../actions"
 
 const initialProducts = [
@@ -295,6 +296,11 @@ export default function(state = initialProducts, action) {
       return [...state].filter(el => el.name !== action.name)
     case ADD_PRODUCT:
       return [...state, { name: action.name }]
+    case SUBMIT_EDIT_PRODUCT:
+      let arr = [...state].filter(el => el.name !== action.data.name)
+      arr.push(action.data)
+      return arr
+
     case DELETE_CATEGORY_PRODUCTS:
       let draft = [...state]
       action.products.forEach(item => {

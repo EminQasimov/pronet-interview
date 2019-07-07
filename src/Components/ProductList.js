@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState, useEffect } from "react"
 import styled, { keyframes } from "styled-components"
 import { Col, Icon, Empty } from "antd"
 import { connect } from "react-redux"
@@ -7,6 +7,7 @@ import AddProductInput from "./AddProductInput"
 
 import { ReactComponent as Delete } from "../assets/img/delete.svg"
 import { ReactComponent as Pencil } from "../assets/img/pencil.svg"
+import { CSSTransition, TransitionGroup } from "react-transition-group"
 
 import {
   deleteProduct,
@@ -26,61 +27,86 @@ const Products = props => {
     setCurrentProduct,
     activePath,
     edit,
-    isEdit,
     activeProduct
   } = props
 
   function submitHandler(val) {
     if (activePath && !products.find(product => product.name === val)) {
       addProduct(val)
+      return true
     }
+    return false
   }
-
+  const [time, setTime] = useState(false)
+  //delay mount of items for transition
+  useEffect(() => {
+    setTime(false)
+    setTimeout(() => {
+      setTime(true)
+    }, 100)
+  }, [activePath])
   return (
     <Col span={8}>
       <AddProductInput submitHandler={submitHandler} />
       <ProductList>
         {productList.length === 0 && <StyledEmpty description=" " />}
-        {productList.map(item => {
-          return (
-            <ListItem
-              key={shortid.generate()}
-              className={
-                activeProduct && activeProduct === item
-                  ? "active"
-                  : !activeProduct && productList[0] === item
-                  ? "active"
-                  : " "
-              }
-              onClick={e => {
-                e.currentTarget.parentNode.childNodes.forEach(element => {
-                  element.classList.remove("active")
-                })
-                e.currentTarget.classList.add("active")
-                setCurrentProduct(item)
-              }}
-            >
-              <P>{item}</P>
-              <span
-                onClick={e => {
-                  e.stopPropagation()
-                  edit(!isEdit)
-                  setCurrentProduct(item)
-                }}
-              >
-                <Icon component={Pencil} />
-              </span>
-              <span
-                onClick={e => {
-                  deleteProduct(item)
-                  e.stopPropagation()
-                }}
-              >
-                <Icon component={Delete} />
-              </span>
-            </ListItem>
-          )
-        })}
+        {time && (
+          <TransitionGroup
+            className="from-transition"
+            style={{ overflow: "hidden", borderRadius: 4 }}
+          >
+            {productList.map(item => {
+              return (
+                <CSSTransition
+                  key={item}
+                  appear={true}
+                  unmoutOnExit
+                  timeout={300}
+                  classNames="trans"
+                >
+                  <ListItem
+                    key={shortid.generate()}
+                    className={
+                      activeProduct && activeProduct === item
+                        ? "active"
+                        : !activeProduct && productList[0] === item
+                        ? "active"
+                        : " "
+                    }
+                    onClick={e => {
+                      e.currentTarget.parentNode.childNodes.forEach(element => {
+                        element.classList.remove("active")
+                      })
+                      e.currentTarget.classList.add("active")
+                      setCurrentProduct(item)
+                      edit(false)
+                    }}
+                  >
+                    <P>{item}</P>
+                    <span
+                      onClick={e => {
+                        e.stopPropagation()
+                        edit(true)
+                        setCurrentProduct(item)
+                      }}
+                    >
+                      <Icon component={Pencil} />
+                    </span>
+                    <span
+                      onClick={e => {
+                        deleteProduct(item)
+                        e.stopPropagation()
+                        edit(false)
+                      }}
+                    >
+                      <Icon component={Delete} />
+                    </span>
+                  </ListItem>
+                </CSSTransition>
+              )
+            })}
+          </TransitionGroup>
+        )}
       </ProductList>
     </Col>
   )
@@ -98,7 +124,6 @@ const mapStateToProp = ({ categories, products }) => {
     products,
     activePath,
     activeProduct: categories.activeProduct,
-    isEdit: categories.editProduct,
     productList: has(categories[activePath], "products")
       ? categories[activePath]["products"]
       : []

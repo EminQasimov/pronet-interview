@@ -1,9 +1,9 @@
 import React from "react"
 import styled from "styled-components"
 import { Transition } from "react-transition-group"
-import { Row, Col, Select, Form, Input } from "antd"
+import { Row, Col, Select, Form, Input,Button, Checkbox } from "antd"
 import { ReactComponent as Close } from "../assets/img/close.svg"
-
+import { ReactComponent as DownArrow } from "../assets/img/blackArrow.svg"
 const { Option } = Select
 
 export default function({ closeDrawer, visible, height }) {
@@ -18,12 +18,13 @@ export default function({ closeDrawer, visible, height }) {
             <Close onClick={closeDrawer} />
           </Col>
         </Heading>
-        <Form layout="vertical">
+        <Form layout="vertical" style={{ marginRight: 16 }}>
           <Form.Item label="Qrup adı" formLayout="vertical">
             <Input defaultValue="Avadanliq" size="large" />
           </Form.Item>
           <Form.Item label="Alt qrup" formLayout="vertical">
             <Select
+              suffixIcon={<DownArrow />}
               showSearch
               size="large"
               defaultValue="Məişət texnikası"
@@ -47,24 +48,90 @@ export default function({ closeDrawer, visible, height }) {
             <Select
               showSearch
               size="large"
+              suffixIcon={<DownArrow />}
               defaultValue="Mal / Material"
               optionFilterProp="children"
               //   onChange={onChange}
               //   onFocus={onFocus}
               //   onBlur={onBlur}
               //   onSearch={onSearch}
-              filterOption={(input, option) =>
-                option.props.children
-                  .toLowerCase()
-                  .indexOf(input.toLowerCase()) >= 0
-              }
+              // filterOption={(input, option) =>
+              //   option.props.children
+              //     .toLowerCase()
+              //     .indexOf(input.toLowerCase()) >= 0
+              // }
             >
-              <Option value="jack">Jack</Option>
-              <Option value="lucy">Lucy</Option>
-              <Option value="tom">Tom</Option>
+              <Option value="Mal / Material">Mal / Material</Option>
+              <Option value="Xidmət">Xidmət</Option>
             </Select>
           </Form.Item>
+          <Form.Item formLayout="vertical">
+            <Checkbox defaultChecked>Seriya nömrəsiz</Checkbox>
+          </Form.Item>
+          <Form.Item label="Parametr" formLayout="vertical">
+            <Select
+              suffixIcon={<DownArrow />}
+              showSearch
+              style={{ marginBottom: 8 }}
+              size="large"
+              defaultValue="CPU"
+              optionFilterProp="children"
+              //   onChange={onChange}
+              //   onFocus={onFocus}
+              //   onBlur={onBlur}
+              //   onSearch={onSearch}
+              // filterOption={(input, option) =>
+              //   option.props.children
+              //     .toLowerCase()
+              //     .indexOf(input.toLowerCase()) >= 0
+              // }
+            >
+              <Option value="Mal / Material">Mal / Material</Option>
+              <Option value="Xidmət">Xidmət</Option>
+            </Select>
+            <Select
+              suffixIcon={<DownArrow />}
+              style={{ marginBottom: 8 }}
+              showSearch
+              size="large"
+              defaultValue="HDD"
+              optionFilterProp="children"
+              //   onChange={onChange}
+              //   onFocus={onFocus}
+              //   onBlur={onBlur}
+              //   onSearch={onSearch}
+              // filterOption={(input, option) =>
+              //   option.props.children
+              //     .toLowerCase()
+              //     .indexOf(input.toLowerCase()) >= 0
+              // }
+            >
+              <Option value="Mal / Material">Mal / Material</Option>
+              <Option value="Xidmət">Xidmət</Option>
+            </Select>
+            <Select
+              showSearch
+              style={{ marginBottom: 8 }}
+              size="large"
+              notFoundContent=" "
+              placeholder="Parametr seçimi"
+              optionFilterProp="children"
+              suffixIcon={<DownArrow />}
+              //   onChange={onChange}
+              //   onFocus={onFocus}
+              //   onBlur={onBlur}
+              //   onSearch={onSearch}
+              // filterOption={(input, option) =>
+              //   option.props.children
+              //     .toLowerCase()
+              //     .indexOf(input.toLowerCase()) >= 0
+              // }
+            />
+          </Form.Item>
         </Form>
+        <Button type="primary" size="large">
+        Əlavə et
+          </Button>
       </>
     )
   }
@@ -101,7 +168,9 @@ const Drawer = styled.div`
   width: 346px;
   background: ${({ theme }) => theme.darkGray};
   box-shadow: -10px 0 0 10px ${({ theme }) => theme.gray};
-
+  .ant-empty-description {
+    font-size: 0px !important;
+  }
   transition: ${({ state }) =>
     state === "entering" || state === "entered"
       ? "0.3s ease-out"

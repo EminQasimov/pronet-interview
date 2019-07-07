@@ -33,7 +33,12 @@ export default function MainLeftPanel({ height }) {
         </Heading>
 
         <YeniKateqoriya type="flex" align="middle">
-          <Button type="primary" size="large" onClick={showDrawer}>
+          <Button
+            type="primary"
+            size="large"
+            onClick={showDrawer}
+            disabled={visible ? true : false}
+          >
             Yeni Kateqoriya
           </Button>
         </YeniKateqoriya>
@@ -57,19 +62,19 @@ export default function MainLeftPanel({ height }) {
           expandIcon={() => <Icon component={DownArrow} />}
         >
           <Panel header="Kateqoriya üzrə" key="1">
-            asdad
+            -
           </Panel>
           <Panel header="Model seçimi" key="2">
-            asdasd
+            -
           </Panel>
           <Panel header="Məhsul tipi" key="3">
-            Sdasd
+            -
           </Panel>
         </CollapsMenu>
 
         <Filter>
           <p>Seçim üzrə filtrasiya</p>
-          <Button type="primary" size="large">
+          <Button type="primary" size="large" disabled={visible ? true : false}>
             Ümumi
           </Button>
           <p>Mal / Material</p>
@@ -90,6 +95,12 @@ const ThemeOverrides = css`
     cursor: pointer;
     background-color: ${({ theme }) => theme.darkGreen};
     border-color: ${({ theme }) => theme.darkGreen};
+  }
+  .ant-btn-primary-disabled,
+  .ant-btn-primary[disabled] {
+    color: #fff !important;
+    background-color: #bbb !important;
+    border-color: #bbb !important;
   }
 `
 
