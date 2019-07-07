@@ -10,7 +10,9 @@ import { ReactComponent as Delete } from "../assets/img/delete.svg"
 import {
   deleteCategory,
   deleteCategoryProducts,
-  editCategoryName
+  editCategoryName,
+  addSubCategory,
+  setWhereAddSubCategory
 } from "../store/actions"
 import { connect } from "react-redux"
 
@@ -18,7 +20,17 @@ function has(object, key) {
   return object ? hasOwnProperty.call(object, key) : false
 }
 
-const PopUp = ({ categories, cat, deleteCategory, plus, editCategoryName }) => {
+const PopUp = props => {
+  let {
+    closeMe,
+    categories,
+    cat,
+    deleteCategory,
+    plus,
+    editCategoryName,
+    setWhereAddSubCategory
+  } = props
+
   //find all category products that will be deleted
   let products = []
   function loop(tree, cat) {
@@ -42,7 +54,9 @@ const PopUp = ({ categories, cat, deleteCategory, plus, editCategoryName }) => {
       {plus && (
         <p
           onClick={e => {
-            console.log("alt clicked")
+            console.log("alt clicked", cat)
+            setWhereAddSubCategory(cat)
+            closeMe()
           }}
         >
           <Icon type="plus" /> Alt kateqoriya
@@ -83,6 +97,12 @@ const mapDispatch = dispatch => {
     },
     editCategoryName: name => {
       dispatch(editCategoryName(name))
+    },
+    addSubCategory: name => {
+      dispatch(addSubCategory(name))
+    },
+    setWhereAddSubCategory: where => {
+      dispatch(setWhereAddSubCategory(where))
     }
   }
 }
@@ -93,15 +113,25 @@ const ConnectedPopUp = connect(
 
 export default function PopAndDots(props) {
   const [showDots, setShowDots] = useState(false)
-  const ref = useRef()
+  const [showPopOver, setPopOver] = useState(false)
+
+  const ref = useRef(null)
 
   useOnClickOutside(ref, () => setShowDots(false))
 
   return (
     <Popover
       placement="leftTop"
-      content={<ConnectedPopUp plus={props.plus} cat={props.cat} />}
+      content={
+        <ConnectedPopUp
+          closeMe={() => setPopOver(false)}
+          plus={props.plus}
+          cat={props.cat}
+        />
+      }
       trigger="click"
+      visible={showPopOver}
+      onVisibleChange={visible => setPopOver(visible)}
     >
       <span
         ref={ref}
@@ -113,6 +143,7 @@ export default function PopAndDots(props) {
           event.preventDefault()
           event.stopPropagation()
           setShowDots(showDots => !showDots)
+          setPopOver(true)
           console.log(props.cat)
         }}
       >

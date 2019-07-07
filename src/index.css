@@ -33,7 +33,9 @@ body {
   background-color: #55ab80 !important;
   border-color: #55ab80 !important;
 }
-
+.ant-popover-arrow {
+  display: none !important;
+}
 .ant-btn-primary {
   color: #fff;
   background-color: #55ab80 !important;

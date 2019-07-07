@@ -6,7 +6,8 @@ import {
   DELETE_CATEGORY,
   SET_PRODUCT_EDIT,
   EDIT_CATEGORY_NAME,
-  CHANGE_CATEGORY_NAME
+  CHANGE_CATEGORY_NAME,
+  WHERE_ADD_SUBCATEGORY
 } from "../actions"
 
 import produce from "immer"
@@ -19,7 +20,10 @@ const initaLCategories = {
   activePath: ["Kompüterlər", "Prosessorlar", "Fujitsu Duo Technics"],
   activeProduct: "",
   editProduct: false,
+
   editCategory: "",
+  whereAddSubcategory: "",
+
   children: [
     "Məişət texnikası",
     "Avadanlıq",
@@ -160,6 +164,11 @@ const initaLCategories = {
 
 export default function(state = initaLCategories, action) {
   switch (action.type) {
+    case WHERE_ADD_SUBCATEGORY:
+      return produce(state, draft => {
+        draft.whereAddSubcategory = action.where
+        draft.activePath.unshift(action.where)
+      })
     case SET_PRODUCT_EDIT:
       return produce(state, draft => {
         draft.editProduct = action.mode
@@ -197,15 +206,26 @@ export default function(state = initaLCategories, action) {
       if (
         draft.editCategory === draft.activePath[draft.activePath.length - 1]
       ) {
-        draft.activePath = [newName]
+        draft.activePath.push(newName)
       }
       return draft
 
     case CHANGE_PATH:
       return produce(state, draft => {
         //change activeProduct to first Element of activeCategory
-        draft.activePath = action.path
-        draft.activeProduct = draft[action.path][0]
+        let p = action.path
+        if (has(draft[p], "products")) {
+          draft.activePath = draft.activePath.filter(el => el !== p)
+          draft.activePath.push(p)
+          draft.activeProduct = draft[p][0]
+        } else if (has(draft[p], "children")) {
+          let idx = draft.activePath.indexOf(p)
+          if (idx >= 0) {
+            draft.activePath.splice(idx, 1)
+          } else {
+            draft.activePath.unshift(p)
+          }
+        }
       })
 
     case DELETE_PRODUCT_FROM_CATEGORY:

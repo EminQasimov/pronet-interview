@@ -1,18 +1,19 @@
 import React, { useState, useRef } from "react"
-import styled from "styled-components"
+import styled, { keyframes } from "styled-components"
 import { connect } from "react-redux"
 import useOnClickOutside from "../hooks/useOnClickOutside"
-
-import {
-  changePath,
-  changeCategoryName,
-  editCategoryName
-} from "../store/actions"
 import { Col, Collapse, Icon, Input } from "antd"
 import AddButton from "./AddButton"
 import PopAndDots from "./PopAndDots"
 import { ReactComponent as DownArrow } from "../assets/img/blackArrow.svg"
 import { ReactComponent as UpArrow } from "../assets/img/upArrow.svg"
+
+import {
+  changePath,
+  changeCategoryName,
+  editCategoryName,
+  setWhereAddSubCategory
+} from "../store/actions"
 
 const { Panel } = Collapse
 
@@ -20,26 +21,31 @@ function has(object, key) {
   return object ? hasOwnProperty.call(object, key) : false
 }
 
-const Categories = ({
-  categories,
-  activePath,
-  change,
-  changeCategoryName,
-  editCategoryName
-}) => {
+const Categories = props => {
+  const {
+    categories,
+    changePath,
+    changeCategoryName,
+    editCategoryName,
+    setWhereAddSubCategory
+  } = props
+
   const [categoryName, setCategoryName] = useState(null)
-  const ref = useRef()
+  const ref = useRef(null)
+  const addSubRef = useRef(null)
 
   function handleInputChange(e) {
     setCategoryName(e.target.value)
   }
-  const path = activePath[activePath.length - 1]
+  const path = [...categories.activePath].pop()
   function renderSub(_, key) {
     if (has(categories[key], "products")) {
       let activeLast = path
       if (activeLast !== key) {
-        change([key])
+        changePath(key)
       }
+    }else{
+      changePath(key)
     }
     if (_) {
       console.log(key, "is opened")
@@ -49,9 +55,13 @@ const Categories = ({
   }
 
   useOnClickOutside(ref, () => {
-    console.log("exited")
     editCategoryName()
   })
+
+  // useOnClickOutside(addSubRef, () => {
+  //   console.log("i remoce cat from store")
+  //   setWhereAddSubCategory()
+  // })
 
   function loop(tree) {
     if (tree !== undefined && has(tree, "children") && tree.children) {
@@ -60,7 +70,6 @@ const Categories = ({
         let rendered = (
           <CollapsMenu
             bordered={false}
-            accordion={true}
             onChange={_ => renderSub(_, key)}
             key={key}
             expandIcon={({ isActive }) => {
@@ -70,9 +79,10 @@ const Categories = ({
                 <Icon component={DownArrow} />
               )
             }}
-            defaultActiveKey={
-              categories.activePath.find(cat => cat === key) ? key : ""
-            }
+            // defaultActiveKey={
+            //   categories.activePath.indexOf(key) >= 0 ? key : ""
+            // }
+            activeKey={categories.activePath.indexOf(key) >= 0 ? key : ""}
           >
             <Panel
               header={
@@ -92,8 +102,9 @@ const Categories = ({
                   >
                     <EditCategoryInput
                       autoFocus
+                      style={{ textIndent: 20 }}
                       size="large"
-                      placeholder="Alt kateqoriyanın adı"
+                      placeholder="Kateqoriyanın yeni adı"
                       value={categoryName}
                       onFocus={e => e.stopPropagation()}
                       onClick={e => e.stopPropagation()}
@@ -130,7 +141,36 @@ const Categories = ({
               className={path === key ? "activeCat" : null}
               key={key}
             >
-              {loop(target)}
+              {categories.whereAddSubcategory === key ? (
+                <Form
+                  key={key}
+                  ref={addSubRef}
+                  onSubmit={e => {
+                    e.stopPropagation()
+                    e.preventDefault()
+                    if (categoryName.trim()) {
+                      changeCategoryName(categoryName)
+                      editCategoryName()
+                      setCategoryName("")
+                    }
+                  }}
+                >
+                  <EditCategoryInput
+                    radius="4px"
+                    autoFocus
+                    size="large"
+                    placeholder="Alt kateqoriyanın adı"
+                    value={categoryName}
+                    onFocus={e => e.stopPropagation()}
+                    onClick={e => e.stopPropagation()}
+                    onKeyDown={e => e.stopPropagation()}
+                    onKeyPress={e => e.stopPropagation()}
+                    onChange={handleInputChange}
+                  />
+                </Form>
+              ) : (
+                loop(target)
+              )}
             </Panel>
           </CollapsMenu>
         )
@@ -145,18 +185,19 @@ const Categories = ({
   return (
     <Col span={8}>
       <AddButton title="Kategoriyalar" />
-
       {loop(categories)}
     </Col>
   )
 }
 
 const mapStateToProps = ({ categories }) => {
-  return { categories, activePath: categories.activePath }
+  return {
+    categories
+  }
 }
 const mapDispatchToProps = dispatch => {
   return {
-    change: path => {
+    changePath: path => {
       dispatch(changePath(path))
     },
     changeCategoryName: newName => {
@@ -164,6 +205,9 @@ const mapDispatchToProps = dispatch => {
     },
     editCategoryName: (name = "") => {
       dispatch(editCategoryName(name))
+    },
+    setWhereAddSubCategory: () => {
+      dispatch(setWhereAddSubCategory(""))
     }
   }
 }
@@ -173,13 +217,26 @@ export default connect(
   mapDispatchToProps
 )(Categories)
 
+const anim = keyframes`
+  from{
+    opacity: 0;
+  }
+  to{
+    opacity: 1;
+  }
+`
+const Form = styled.form`
+  margin: 4px 1px;
+  padding-left: 25px;
+  animation: ${anim} 0.5s ease-in forwards;
+`
 const EditCategoryInput = styled(Input)`
   border: none !important;
   width: 100% !important;
   height: 100%;
 
-  border-radius: 0 !important;
-  text-indent: 16px;
+  border-radius: ${props => (props.radius ? props.radius : 0)} !important;
+  text-indent: 4px;
   &:focus,
   &:hover {
     border: none !important;

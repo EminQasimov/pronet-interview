@@ -17,6 +17,23 @@ export const SUBMIT_EDIT_PRODUCT = "SUBMIT_EDIT_PRODUCT"
 export const EDIT_CATEGORY_NAME = "EDIT_CATEGORY_NAME"
 export const CHANGE_CATEGORY_NAME = "CHANGE_CATEGORY_NAME"
 
+export const WHERE_ADD_SUBCATEGORY = "WHERE_ADD_SUBCATEGORY"
+export const ADD_SUB_CATEGORY = "ADD_SUB_CATEGORY"
+
+export function setWhereAddSubCategory(where) {
+  return {
+    type: WHERE_ADD_SUBCATEGORY,
+    where
+  }
+}
+
+export function addSubCategory(newSubCategoryName) {
+  return {
+    type: ADD_SUB_CATEGORY,
+    newSubCategoryName
+  }
+}
+
 export function changeCategoryName(newName) {
   return {
     type: CHANGE_CATEGORY_NAME,
