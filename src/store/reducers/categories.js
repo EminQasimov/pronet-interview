@@ -8,7 +8,8 @@ import {
   EDIT_CATEGORY_NAME,
   CHANGE_CATEGORY_NAME,
   WHERE_ADD_SUBCATEGORY,
-  ADD_SUB_CATEGORY
+  ADD_SUB_CATEGORY,
+  ADD_CATEGORY
 } from "../actions"
 
 import produce from "immer"
@@ -20,6 +21,14 @@ function has(object, key) {
 
 export default function(state = initData, action) {
   switch (action.type) {
+    case ADD_CATEGORY:
+      return Object.assign({}, state, {
+        children: [action.categoryInputs.qrup].concat([...state.children]),
+        [action.categoryInputs.qrup]: {
+          children: [action.categoryInputs.altqrup]
+        }
+      })
+
     case ADD_SUB_CATEGORY:
       let name = action.newSubCategoryName
 

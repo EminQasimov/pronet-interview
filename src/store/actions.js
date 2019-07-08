@@ -20,6 +20,16 @@ export const CHANGE_CATEGORY_NAME = "CHANGE_CATEGORY_NAME"
 export const WHERE_ADD_SUBCATEGORY = "WHERE_ADD_SUBCATEGORY"
 export const ADD_SUB_CATEGORY = "ADD_SUB_CATEGORY"
 
+export const ADD_CATEGORY = "ADD_CATEGORY"
+
+export function addCategory(inputs, categoryInputs) {
+  return {
+    type: ADD_CATEGORY,
+    inputs,
+    categoryInputs
+  }
+}
+
 export function setWhereAddSubCategory(where) {
   return {
     type: WHERE_ADD_SUBCATEGORY,

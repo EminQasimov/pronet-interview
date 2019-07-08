@@ -2,7 +2,8 @@ import React, { useState } from "react"
 import styled, { css } from "styled-components"
 import { Transition } from "react-transition-group"
 import { Row, Col, Select, Form, Input, Button, Checkbox, Icon } from "antd"
-
+import { connect } from "react-redux"
+import { addCategory } from "../store/actions"
 import { ReactComponent as Close } from "../assets/img/close.svg"
 import { ReactComponent as DownArrow } from "../assets/img/blackArrow.svg"
 import { ReactComponent as CirclePlus } from "../assets/img/circlePlus.svg"
@@ -11,17 +12,29 @@ import { ReactComponent as CircleMinus } from "../assets/img/circleMinus.svg"
 const { Option } = Select
 const { Item } = Form
 
-const DrawerContent = ({ closeDrawer }) => {
+const DrawerContent = ({ closeDrawer, addCategory }) => {
   const [inputs, setInputs] = useState(["CPU", "HDD"])
+
+  const [categoryInputs, setCategoryInputs] = useState({
+    qrup: "",
+    altqrup: ""
+  })
   const [parametr, setParametr] = useState("")
+
+  function categoryInputHandler(e) {
+    let obj = { ...categoryInputs }
+    obj[e.target.name] = e.target.value
+    setCategoryInputs(obj)
+    console.log(categoryInputs)
+  }
 
   function inputChangeHandler(e) {
     let arr = [...inputs]
     arr[e.target.name] = e.target.value
     setInputs(arr)
+    console.log(inputs)
   }
   function removeParamtr(val) {
-    console.log(val)
     let arr = [...inputs].filter((_, idx) => idx !== val)
     setInputs(arr)
   }
@@ -48,13 +61,20 @@ const DrawerContent = ({ closeDrawer }) => {
       </Heading>
       <Form layout="vertical" style={{ marginRight: 21 }}>
         <Item label="Qrup adı" formLayout="vertical">
-          <Input defaultValue="Avadanliq" size="large" />
+          <Input
+            size="large"
+            name="qrup"
+            value={categoryInputs.qrup}
+            onChange={categoryInputHandler}
+          />
         </Item>
         <Item label="Alt qrup" formLayout="vertical">
           <Input
             suffix={<DownArrow />}
             size="large"
-            defaultValue="Məişət texnikası"
+            name="altqrup"
+            value={categoryInputs.altqrup || ""}
+            onChange={categoryInputHandler}
           />
         </Item>
         <Item label="Qrup növü" formLayout="vertical">
@@ -63,22 +83,20 @@ const DrawerContent = ({ closeDrawer }) => {
             suffixIcon={<DownArrow />}
             defaultValue="Mal / Material"
             optionFilterProp="children"
-            //   onChange={onChange}
-            //   onFocus={onFocus}
-            //   onBlur={onBlur}
-            //   onSearch={onSearch}
-            // filterOption={(input, option) =>
-            //   option.props.children
-            //     .toLowerCase()
-            //     .indexOf(input.toLowerCase()) >= 0
-            // }
+            name="qrupnovu"
           >
             <Option value="Mal / Material">Mal / Material</Option>
             <Option value="Xidmət">Xidmət</Option>
           </Select>
         </Item>
         <Item formLayout="vertical">
-          <Checkbox defaultChecked>Seriya nömrəsiz</Checkbox>
+          <Checkbox
+            defaultChecked
+            name="seriya"
+            onChange={categoryInputHandler}
+          >
+            Seriya nömrəsiz
+          </Checkbox>
         </Item>
 
         <Item label="Parametr" formLayout="vertical">
@@ -122,12 +140,34 @@ const DrawerContent = ({ closeDrawer }) => {
         </Item>
       </Form>
 
-      <Button style={{ marginTop: 16 }} type="primary" size="large">
+      <Button
+        style={{ marginTop: 16 }}
+        type="primary"
+        size="large"
+        onClick={() => {
+          addCategory(inputs, categoryInputs)
+          closeDrawer()
+        }}
+      >
         Əlavə et
       </Button>
     </>
   )
 }
+const mapState = state => {
+  return {}
+}
+const mapDispatch = dispatch => {
+  return {
+    addCategory: (inputs, categoryInputs) => {
+      dispatch(addCategory(inputs, categoryInputs))
+    }
+  }
+}
+const ConnectedDrawer = connect(
+  mapState,
+  mapDispatch
+)(DrawerContent)
 
 export default function({ closeDrawer, visible, height }) {
   return (
@@ -146,7 +186,7 @@ export default function({ closeDrawer, visible, height }) {
               height: height ? height + "px" : "120%"
             }}
           >
-            <DrawerContent closeDrawer={closeDrawer} />
+            <ConnectedDrawer closeDrawer={closeDrawer} />
           </Drawer>
         )}
       </Transition>

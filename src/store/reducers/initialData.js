@@ -132,36 +132,4 @@ const initData = {
 }
 
 export default initData
-
-const data = {
-  "Məişət texnikası": {
-    Metbex: {
-      utuler: {
-        products: [
-          {
-            name: "beko",
-            qiymet: 25
-          },
-          {
-            name: "sony",
-            qiymet: 433
-          }
-        ]
-      },
-      caydanlar: {
-        products: ["suse", "tefal"]
-      }
-    },
-    Otaq: {
-      hamam: {},
-      qonaq: {}
-    }
-  },
-  Avadanlıq: {},
-  Kompüterlər: {},
-  Tablets: {},
-  Modems: {},
-  SmartWatch: {},
-  Maşınlar: {},
-  Velosipedler: {}
-}
+ 
