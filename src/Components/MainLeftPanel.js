@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React from "react"
 import styled, { css } from "styled-components"
 import { Row, Col, Button, Input, Collapse, Icon } from "antd"
 import { ReactComponent as Setting } from "../assets/img/setting.svg"
@@ -8,17 +8,12 @@ import Drawer from "./Drawer"
 const { Search } = Input
 const { Panel } = Collapse
 
-export default function MainLeftPanel({ height }) {
-  const [visible, setVisible] = useState(false)
-
-  function showDrawer() {
-    setVisible(true)
-  }
-
-  function closeDrawer() {
-    setVisible(false)
-  }
-
+export default function MainLeftPanel({
+  height,
+  visible,
+  closeDrawer,
+  showDrawer
+}) {
   return (
     <>
       <Drawer height={height} visible={visible} closeDrawer={closeDrawer} />

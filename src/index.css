@@ -52,6 +52,9 @@ body {
 html {
   --antd-wave-shadow-color: #009688 !important;
 }
+.ant-checkbox-input:focus + .ant-checkbox-inner {
+  border-color: #009688 !important;
+}
 
 .trans-appear {
   opacity: 0;
@@ -81,4 +84,19 @@ html {
 .trans-exit.trans-exit-active {
   transform: translateX(-100%);
   transition: all 0.3s ease-in-out;
+}
+/* _________________ */
+.my-node-enter {
+  opacity: 0;
+}
+.my-node-enter-active {
+  opacity: 1;
+  transition: opacity 200ms;
+}
+.my-node-exit {
+  opacity: 1;
+}
+.my-node-exit-active {
+  opacity: 0;
+  transition: opacity 200ms;
 }

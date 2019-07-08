@@ -147,6 +147,15 @@ const initialProducts = [
     əlaqə: "(731) 5351600"
   },
   {
+    name: "Fujitsu A5R35-Z",
+    İstehsalçı: "Ario",
+    ölkə: "Sabater",
+    email: "asabater1@statcounter.com",
+    Partner: "Male",
+    Qiyməti: "23.177.148.49",
+    əlaqə: "(274) 5660255"
+  },
+  {
     name: "Crown Victoria",
     İstehsalçı: "Ario",
     ölkə: "Sabater",

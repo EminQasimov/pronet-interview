@@ -1,141 +1,135 @@
-import React from "react"
-import styled from "styled-components"
+import React, { useState } from "react"
+import styled, { css } from "styled-components"
 import { Transition } from "react-transition-group"
-import { Row, Col, Select, Form, Input,Button, Checkbox } from "antd"
+import { Row, Col, Select, Form, Input, Button, Checkbox, Icon } from "antd"
+
 import { ReactComponent as Close } from "../assets/img/close.svg"
 import { ReactComponent as DownArrow } from "../assets/img/blackArrow.svg"
+import { ReactComponent as CirclePlus } from "../assets/img/circlePlus.svg"
+import { ReactComponent as CircleMinus } from "../assets/img/circleMinus.svg"
+
 const { Option } = Select
+const { Item } = Form
+
+const DrawerContent = ({ closeDrawer }) => {
+  const [inputs, setInputs] = useState(["CPU", "HDD"])
+  const [parametr, setParametr] = useState("")
+
+  function inputChangeHandler(e) {
+    let arr = [...inputs]
+    arr[e.target.name] = e.target.value
+    setInputs(arr)
+  }
+  function removeParamtr(val) {
+    console.log(val)
+    let arr = [...inputs].filter((_, idx) => idx !== val)
+    setInputs(arr)
+  }
+  function addNewParamter(val) {
+    const str = val.trim()
+    const idx = inputs.indexOf(str)
+    //no same parametr
+    if (str && idx < 0) {
+      let arr = [...inputs]
+      arr.push(val)
+      setInputs(arr)
+      setParametr("")
+    }
+  }
+  return (
+    <>
+      <Heading type="flex" justify="space-between" align="middle">
+        <Col>
+          <h4>Yeni kateqoriya</h4>
+        </Col>
+        <Col>
+          <Close onClick={closeDrawer} />
+        </Col>
+      </Heading>
+      <Form layout="vertical" style={{ marginRight: 21 }}>
+        <Item label="Qrup adı" formLayout="vertical">
+          <Input defaultValue="Avadanliq" size="large" />
+        </Item>
+        <Item label="Alt qrup" formLayout="vertical">
+          <Input
+            suffix={<DownArrow />}
+            size="large"
+            defaultValue="Məişət texnikası"
+          />
+        </Item>
+        <Item label="Qrup növü" formLayout="vertical">
+          <Select
+            size="large"
+            suffixIcon={<DownArrow />}
+            defaultValue="Mal / Material"
+            optionFilterProp="children"
+            //   onChange={onChange}
+            //   onFocus={onFocus}
+            //   onBlur={onBlur}
+            //   onSearch={onSearch}
+            // filterOption={(input, option) =>
+            //   option.props.children
+            //     .toLowerCase()
+            //     .indexOf(input.toLowerCase()) >= 0
+            // }
+          >
+            <Option value="Mal / Material">Mal / Material</Option>
+            <Option value="Xidmət">Xidmət</Option>
+          </Select>
+        </Item>
+        <Item formLayout="vertical">
+          <Checkbox defaultChecked>Seriya nömrəsiz</Checkbox>
+        </Item>
+
+        <Item label="Parametr" formLayout="vertical">
+          {inputs.map((item, idx) => {
+            return (
+              <P key={idx}>
+                <Input
+                  suffix={<DownArrow />}
+                  key={idx}
+                  style={{ marginBottom: 8 }}
+                  size="large"
+                  name={idx}
+                  value={item}
+                  onChange={inputChangeHandler}
+                />
+                <InputIcon
+                  component={CircleMinus}
+                  onClick={() => removeParamtr(idx)}
+                />
+              </P>
+            )
+          })}
+          <PlusForm>
+            <Input
+              size="large"
+              placeholder="Parametr seçimi"
+              suffix={<DownArrow />}
+              value={parametr}
+              onChange={e => setParametr(e.target.value)}
+              onKeyPress={e => {
+                if (e.which === 13 || e.keyCode === 13) {
+                  addNewParamter(parametr)
+                }
+              }}
+            />
+            <InputIcon
+              onClick={() => addNewParamter(parametr)}
+              component={CirclePlus}
+            />
+          </PlusForm>
+        </Item>
+      </Form>
+
+      <Button style={{ marginTop: 16 }} type="primary" size="large">
+        Əlavə et
+      </Button>
+    </>
+  )
+}
 
 export default function({ closeDrawer, visible, height }) {
-  const DrawerContent = props => {
-    return (
-      <>
-        <Heading type="flex" justify="space-between" align="middle">
-          <Col>
-            <h4>Yeni kateqoriya</h4>
-          </Col>
-          <Col>
-            <Close onClick={closeDrawer} />
-          </Col>
-        </Heading>
-        <Form layout="vertical" style={{ marginRight: 16 }}>
-          <Form.Item label="Qrup adı" formLayout="vertical">
-            <Input defaultValue="Avadanliq" size="large" />
-          </Form.Item>
-          <Form.Item label="Alt qrup" formLayout="vertical">
-            <Select
-              suffixIcon={<DownArrow />}
-              showSearch
-              size="large"
-              defaultValue="Məişət texnikası"
-              optionFilterProp="children"
-              //   onChange={onChange}
-              //   onFocus={onFocus}
-              //   onBlur={onBlur}
-              //   onSearch={onSearch}
-              filterOption={(input, option) =>
-                option.props.children
-                  .toLowerCase()
-                  .indexOf(input.toLowerCase()) >= 0
-              }
-            >
-              <Option value="jack">Jack</Option>
-              <Option value="lucy">Lucy</Option>
-              <Option value="tom">Tom</Option>
-            </Select>
-          </Form.Item>
-          <Form.Item label="Qrup növü" formLayout="vertical">
-            <Select
-              showSearch
-              size="large"
-              suffixIcon={<DownArrow />}
-              defaultValue="Mal / Material"
-              optionFilterProp="children"
-              //   onChange={onChange}
-              //   onFocus={onFocus}
-              //   onBlur={onBlur}
-              //   onSearch={onSearch}
-              // filterOption={(input, option) =>
-              //   option.props.children
-              //     .toLowerCase()
-              //     .indexOf(input.toLowerCase()) >= 0
-              // }
-            >
-              <Option value="Mal / Material">Mal / Material</Option>
-              <Option value="Xidmət">Xidmət</Option>
-            </Select>
-          </Form.Item>
-          <Form.Item formLayout="vertical">
-            <Checkbox defaultChecked>Seriya nömrəsiz</Checkbox>
-          </Form.Item>
-          <Form.Item label="Parametr" formLayout="vertical">
-            <Select
-              suffixIcon={<DownArrow />}
-              showSearch
-              style={{ marginBottom: 8 }}
-              size="large"
-              defaultValue="CPU"
-              optionFilterProp="children"
-              //   onChange={onChange}
-              //   onFocus={onFocus}
-              //   onBlur={onBlur}
-              //   onSearch={onSearch}
-              // filterOption={(input, option) =>
-              //   option.props.children
-              //     .toLowerCase()
-              //     .indexOf(input.toLowerCase()) >= 0
-              // }
-            >
-              <Option value="Mal / Material">Mal / Material</Option>
-              <Option value="Xidmət">Xidmət</Option>
-            </Select>
-            <Select
-              suffixIcon={<DownArrow />}
-              style={{ marginBottom: 8 }}
-              showSearch
-              size="large"
-              defaultValue="HDD"
-              optionFilterProp="children"
-              //   onChange={onChange}
-              //   onFocus={onFocus}
-              //   onBlur={onBlur}
-              //   onSearch={onSearch}
-              // filterOption={(input, option) =>
-              //   option.props.children
-              //     .toLowerCase()
-              //     .indexOf(input.toLowerCase()) >= 0
-              // }
-            >
-              <Option value="Mal / Material">Mal / Material</Option>
-              <Option value="Xidmət">Xidmət</Option>
-            </Select>
-            <Select
-              showSearch
-              style={{ marginBottom: 8 }}
-              size="large"
-              notFoundContent=" "
-              placeholder="Parametr seçimi"
-              optionFilterProp="children"
-              suffixIcon={<DownArrow />}
-              //   onChange={onChange}
-              //   onFocus={onFocus}
-              //   onBlur={onBlur}
-              //   onSearch={onSearch}
-              // filterOption={(input, option) =>
-              //   option.props.children
-              //     .toLowerCase()
-              //     .indexOf(input.toLowerCase()) >= 0
-              // }
-            />
-          </Form.Item>
-        </Form>
-        <Button type="primary" size="large">
-        Əlavə et
-          </Button>
-      </>
-    )
-  }
-
   return (
     <>
       <Transition in={visible} timeout={300}>
@@ -152,7 +146,7 @@ export default function({ closeDrawer, visible, height }) {
               height: height ? height + "px" : "120%"
             }}
           >
-            <DrawerContent />
+            <DrawerContent closeDrawer={closeDrawer} />
           </Drawer>
         )}
       </Transition>
@@ -160,6 +154,28 @@ export default function({ closeDrawer, visible, height }) {
   )
 }
 
+const common = css`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-right: -40px;
+`
+const P = styled.div`
+  ${common}
+  input {
+    font-weight: 500;
+  }
+`
+const PlusForm = styled.div`
+  ${common}
+  input {
+    font-weight: 400 !important;
+  }
+`
+const InputIcon = styled(Icon)`
+  font-size: 20px;
+  padding: 10px;
+`
 const Drawer = styled.div`
   position: absolute;
   padding: 0 32px;

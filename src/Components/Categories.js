@@ -12,7 +12,8 @@ import {
   changePath,
   changeCategoryName,
   editCategoryName,
-  setWhereAddSubCategory
+  setWhereAddSubCategory,
+  addSubCategory
 } from "../store/actions"
 
 const { Panel } = Collapse
@@ -27,15 +28,21 @@ const Categories = props => {
     changePath,
     changeCategoryName,
     editCategoryName,
-    setWhereAddSubCategory
+    setWhereAddSubCategory,
+    addSubCategory,
+    showDrawer
   } = props
 
   const [categoryName, setCategoryName] = useState(null)
+  const [subCategoryName, setSubCategoryName] = useState(null)
   const ref = useRef(null)
   const addSubRef = useRef(null)
 
   function handleInputChange(e) {
     setCategoryName(e.target.value)
+  }
+  function handleSubCategoryNameChange(e) {
+    setSubCategoryName(e.target.value)
   }
   const path = [...categories.activePath].pop()
   function renderSub(_, key) {
@@ -44,7 +51,7 @@ const Categories = props => {
       if (activeLast !== key) {
         changePath(key)
       }
-    }else{
+    } else {
       changePath(key)
     }
     if (_) {
@@ -58,10 +65,10 @@ const Categories = props => {
     editCategoryName()
   })
 
-  // useOnClickOutside(addSubRef, () => {
-  //   console.log("i remoce cat from store")
-  //   setWhereAddSubCategory()
-  // })
+  useOnClickOutside(addSubRef, () => {
+    console.log("i remoce cat from store")
+    setWhereAddSubCategory()
+  })
 
   function loop(tree) {
     if (tree !== undefined && has(tree, "children") && tree.children) {
@@ -115,10 +122,10 @@ const Categories = props => {
                   </form>
                 ) : (
                   <p
-                    onDoubleClick={e => {
-                      e.stopPropagation()
-                      editCategoryName(key)
-                    }}
+                    // onDoubleClick={e => {
+                    //   e.stopPropagation()
+                    //   editCategoryName(key)
+                    // }}
                     style={{ width: "100%", padding: "10px", paddingLeft: 0 }}
                   >
                     {key}
@@ -138,7 +145,11 @@ const Categories = props => {
                   />
                 )
               }
-              className={path === key ? "activeCat" : null}
+              className={
+                path === key && has(categories[path], "products")
+                  ? "activeCat"
+                  : null
+              }
               key={key}
             >
               {categories.whereAddSubcategory === key ? (
@@ -148,10 +159,13 @@ const Categories = props => {
                   onSubmit={e => {
                     e.stopPropagation()
                     e.preventDefault()
-                    if (categoryName.trim()) {
-                      changeCategoryName(categoryName)
-                      editCategoryName()
-                      setCategoryName("")
+                    if (
+                      subCategoryName.trim() &&
+                      !has(categories, subCategoryName.trim())
+                    ) {
+                      addSubCategory(subCategoryName)
+                      setWhereAddSubCategory()
+                      setSubCategoryName("")
                     }
                   }}
                 >
@@ -160,12 +174,12 @@ const Categories = props => {
                     autoFocus
                     size="large"
                     placeholder="Alt kateqoriyanın adı"
-                    value={categoryName}
+                    value={subCategoryName}
                     onFocus={e => e.stopPropagation()}
                     onClick={e => e.stopPropagation()}
                     onKeyDown={e => e.stopPropagation()}
                     onKeyPress={e => e.stopPropagation()}
-                    onChange={handleInputChange}
+                    onChange={handleSubCategoryNameChange}
                   />
                 </Form>
               ) : (
@@ -184,7 +198,7 @@ const Categories = props => {
 
   return (
     <Col span={8}>
-      <AddButton title="Kategoriyalar" />
+      <AddButton title="Kategoriyalar" onClick={showDrawer} />
       {loop(categories)}
     </Col>
   )
@@ -208,6 +222,9 @@ const mapDispatchToProps = dispatch => {
     },
     setWhereAddSubCategory: () => {
       dispatch(setWhereAddSubCategory(""))
+    },
+    addSubCategory: name => {
+      dispatch(addSubCategory(name))
     }
   }
 }

@@ -7,182 +7,57 @@ import {
   SET_PRODUCT_EDIT,
   EDIT_CATEGORY_NAME,
   CHANGE_CATEGORY_NAME,
-  WHERE_ADD_SUBCATEGORY
+  WHERE_ADD_SUBCATEGORY,
+  ADD_SUB_CATEGORY
 } from "../actions"
 
 import produce from "immer"
+import initData from "./initialData"
 
 function has(object, key) {
   return object ? hasOwnProperty.call(object, key) : false
 }
 
-const initaLCategories = {
-  activePath: ["Kompüterlər", "Prosessorlar", "Fujitsu Duo Technics"],
-  activeProduct: "",
-  editProduct: false,
-
-  editCategory: "",
-  whereAddSubcategory: "",
-
-  children: [
-    "Məişət texnikası",
-    "Avadanlıq",
-    "Kompüterlər",
-    "Tablets",
-    "Modems",
-    "SmartWatch",
-    "Maşinlar",
-    "Velosipedler"
-  ],
-  Kompüterlər: {
-    children: ["Monitorlar", "Prosessorlar"]
-  },
-  Prosessorlar: {
-    children: ["Fujitsu Duo Technics"]
-  },
-
-  "Fujitsu Duo Technics": {
-    products: [
-      "Fujitsu A5R35-D",
-      "Fujitsu 36GD9-A",
-      "Fujitsu A536H-H",
-      "Fujitsu A5R35-Z",
-      "Fujitsu A5R35-Q",
-      "Fujitsu 36GD9-F",
-      "Fujitsu A536H-B",
-      "Fujitsu A5R35-N",
-      "Fujitsu A5R35-E"
-    ]
-  },
-
-  "Məişət texnikası": {
-    children: ["toshiba", "hp"]
-  },
-  hp: {
-    children: ["Yük Maşınları", "Motosiklet"]
-  },
-  Maşinlar: {
-    children: ["Yük Maşınları", "Motosiklet"]
-  },
-  "Yük Maşınları": {
-    products: ["Protege", "Crown Victoria", "Sigma", "Leganza", "Envoy"]
-  },
-  Motosiklet: {
-    products: ["Cougar", "Acclaim", "Excel", "Jetta", "Yaris"]
-  },
-  Velosipedler: {
-    children: ["Harley", "2teker"]
-  },
-  Avadanlıq: {
-    children: ["samsung", "iphone"]
-  },
-  toshiba: {
-    children: ["nitro", "satalite"]
-  },
-  nitro: {
-    children: ["j5", "L300"]
-  },
-  j5: {
-    products: []
-  },
-  L300: {
-    products: []
-  },
-  "64 inch monitors": {
-    products: ["Fujitsu A536H-B", "Fujitsu A5R35-N", "Fujitsu A5R35-E"]
-  },
-  Tablets: {
-    children: ["ipad", "ipod"]
-  },
-  ipad: {
-    products: ["ENAUT", "ZUVY", "FITCORE"]
-  },
-  ipod: {
-    products: ["GUSHKOOL", "ISOLOGICA", "PARCOE"]
-  },
-  Modems: {
-    children: ["tp link", "3g"]
-  },
-  SmartWatch: {
-    children: ["iwatch", "band"]
-  },
-  Monitorlar: {
-    children: ["Samsung Plazma", "LG LCD"]
-  },
-  "LG LCD": {
-    products: ["Fujitsu A5R35-N", "Fujitsu A5R35-E"]
-  },
-  "Samsung Plazma": {
-    products: [
-      "Fujitsu A5R35-Q",
-      "Fujitsu 36GD9-F",
-      "Fujitsu A536H-B",
-      "Fujitsu A5R35-N",
-      "Fujitsu A5R35-E"
-    ]
-  },
-  "47 inch monitors": {
-    products: [
-      "Fujitsu 36GD9-F",
-      "Fujitsu A536H-B",
-      "Fujitsu A5R35-N",
-      "Fujitsu A5R35-E"
-    ]
-  },
-
-  satalite: {
-    products: [
-      "Fujitsu A536H-H",
-      "Fujitsu A5R35-D",
-      "Fujitsu A5R35-Q",
-      "Fujitsu 36GD9-F",
-      "Fujitsu A536H-B"
-    ]
-  },
-  samsung: {
-    products: [
-      "Fujitsu A536H-H",
-      "Fujitsu A5R35-D",
-      "Fujitsu A5R35-Q",
-      "Fujitsu A536H-B"
-    ]
-  },
-  iphone: {
-    products: [
-      "Fujitsu A536H-H",
-      "Fujitsu A5R35-Q",
-      "Fujitsu A536H-B",
-      "Fujitsu A536H-H",
-      "Fujitsu A5R35-Q",
-      "Fujitsu A536H-B",
-      "Fujitsu A536H-H",
-      "Fujitsu A5R35-Q",
-      "Fujitsu A536H-B"
-    ]
-  }
-}
-
-export default function(state = initaLCategories, action) {
+export default function(state = initData, action) {
   switch (action.type) {
+    case ADD_SUB_CATEGORY:
+      let name = action.newSubCategoryName
+
+      if (has(state, name)) return state
+      return produce(state, draft => {
+        draft[draft.whereAddSubcategory].children.push(name)
+
+        if (draft.children.indexOf(draft.whereAddSubcategory) >= 0) {
+          draft[name] = {
+            children: []
+          }
+        } else {
+          draft[name] = {
+            products: []
+          }
+        }
+      })
+
     case WHERE_ADD_SUBCATEGORY:
       return produce(state, draft => {
         draft.whereAddSubcategory = action.where
         draft.activePath.unshift(action.where)
       })
+
     case SET_PRODUCT_EDIT:
       return produce(state, draft => {
         draft.editProduct = action.mode
       })
+
     case EDIT_CATEGORY_NAME:
       return produce(state, draft => {
         draft.editCategory = action.name
       })
+
     case CHANGE_CATEGORY_NAME:
       let { newName } = action
       if (has(state, newName)) return state
-
       let draft = { ...state }
-
       function findParent(tree) {
         if (tree !== undefined && has(tree, "children") && tree.children) {
           tree.children.forEach((key, i) => {
@@ -199,15 +74,17 @@ export default function(state = initaLCategories, action) {
 
       draft[newName] = { ...draft[draft.editCategory] }
       delete draft[draft.editCategory]
+      let arr = [...draft.activePath]
 
-      if (draft.editCategory === draft.activeProduct) {
+      if (draft.editCategory === arr.pop()) {
         draft.activeProduct = newName
+        arr.push(newName)
+        draft.activePath = arr
       }
-      if (
-        draft.editCategory === draft.activePath[draft.activePath.length - 1]
-      ) {
-        draft.activePath.push(newName)
-      }
+      draft.activePath = [...draft.activePath].filter(
+        el => el !== draft.editCategory
+      )
+      draft.activePath.unshift(newName)
       return draft
 
     case CHANGE_PATH:
@@ -262,7 +139,7 @@ export default function(state = initaLCategories, action) {
             tree.children.forEach(key => {
               paths.push(key)
               findChildren(draft[key])
-            }) //foreach
+            })
           } else {
             return
           }
@@ -285,9 +162,8 @@ export default function(state = initaLCategories, action) {
           }
         }
         findParent(draft)
-        draft.activePath = []
-        console.log(paths)
-      }) //end produce
+        draft.activePath = draft.activePath.filter(el => el !== cat)
+      })
 
     default:
       return state

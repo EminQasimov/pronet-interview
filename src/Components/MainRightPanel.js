@@ -12,11 +12,11 @@ const DateRange = styled.h2`
   border-color: ${({ theme }) => theme.textBlack200};
 `
 
-export default function MainRightPanel() {
+export default function MainRightPanel({ visible, closeDrawer, showDrawer }) {
   return (
     <Row gutter={16}>
       <DateRange>08 - 18 Sentyabr 2018</DateRange>
-      <Categories />
+      <Categories {...{ visible, closeDrawer, showDrawer }} />
       <ProductList />
       <ProductInfo />
     </Row>

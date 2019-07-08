@@ -1,4 +1,4 @@
-import React, { useRef } from "react"
+import React, { useRef, useState } from "react"
 import styled from "styled-components"
 import { Row } from "antd"
 import MainLeftPanel from "./MainLeftPanel"
@@ -19,23 +19,41 @@ const Main = styled.main`
 `
 
 export default function() {
+  const [visible, setVisible] = useState(false)
+
+  function showDrawer() {
+    setVisible(true)
+  }
+
+  function closeDrawer() {
+    setVisible(false)
+  }
   const main = useRef(null)
   const height = useResize(main)
 
   return (
     <Main ref={main}>
-      <MainLeftPanel height={height} />
+      <MainLeftPanel
+        height={height}
+        visible={visible}
+        closeDrawer={closeDrawer}
+        showDrawer={showDrawer}
+      />
       <Row
         style={{
           flex: 1,
           padding: "24px 32px",
-          paddingBottom:0,
+          paddingBottom: 0,
           width: " calc(100% - 296px)",
           position: "absolute",
           right: 0
         }}
       >
-        <MainRightPanel />
+        <MainRightPanel
+          visible={visible}
+          closeDrawer={closeDrawer}
+          showDrawer={showDrawer}
+        />
       </Row>
     </Main>
   )
